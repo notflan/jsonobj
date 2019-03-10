@@ -138,6 +138,10 @@ func NewObj(init ...interface{}) *JSONObj {
 	return obj
 }
 
+func N(init ...interface{}) *JSONObj {
+	return NewObj(init...)
+}
+
 func (obj *JSONObj) SetInt(in int64) *JSONObj {
 	obj.jtype = JSONInt
 	obj.tInt = in

@@ -49,9 +49,9 @@ func showUnmarshal(obj *JSONObj, indent int) {
 }
 
 func TestMessage(t *testing.T) {
-	obj, objm := NewObj().MakeMap()
+	obj, objm := N().MakeMap()
 
-	objm["test"] = NewObj().SetInt(10)
+	objm["test"] = N().SetInt(10)
 	objm["test2"] = NewObj().SetString("hello")
 
 	var obja *[]*JSONObj
