@@ -60,8 +60,9 @@ TypeCase example:
 	//Type is neither
  })
 
-Both type casing functions return true if a handler was called (including TCaseElse) or false if not or there was an error.
+It's worth noting that while TypeCase prefers int64 and float64 taking functions for JSONInt and JSONFloat types, she can also take int and float32 taking functions as well for those types.
 
+Both type casing functions return true if a handler was called (including TCaseElse) or false if not or there was an error.
 
 --- Marshalling ---
 
