@@ -37,9 +37,9 @@ func showUnmarshal(obj *JSONObj, indent int) {
 		fmt.Printf("%s}\n", tabs)
 	}, JSONUndef, func() {
 		fmt.Println("NULL")
+	}, JSONBool, func(b bool) {
+		fmt.Println("BOOL", b)
 	}, func(obj *JSONObj) {
-
-
 		fmt.Println("ELSE", obj.Value())
 	}) {
 		panic("uh oh")
@@ -69,7 +69,9 @@ func TestMessage(t *testing.T) {
 	objm2["array"] = NewObj(1234, 1.234, "one two three four")
 	objm2["map"]  = NewObj(Table(KV("one", 1), KV("two", 2.00), KV("three", "three"), KV("four", Table(KV("sub", 1, 2.001, "3", 4)))))
 
+	objm2["boolean"] = NewObj(true)
 
+	objm2["owo"] = NewObj(Table(KV("one", false, 123, true), KV("two", true)), true, false, "one")
 
 	*obja = append(*obja, NewObj().SetString("world"), NewObj().SetString("foo"), NewObj().SetInt(33))
 

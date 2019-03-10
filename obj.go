@@ -12,6 +12,7 @@ const (
 	JSONString
 	JSONInt
 	JSONMap
+	JSONBool
 	JSONFloat
 	JSONArray
 )
@@ -21,6 +22,7 @@ type JSONObj struct {
 
 	tInt int64
 	tString string
+	tBool bool
 	tFloat float64
 	tArray []*JSONObj
 	tMap map[string]*JSONObj
@@ -34,6 +36,8 @@ func (obj JSONObj)  MarshalJSON() ([]byte, error) {
 			return json.Marshal(obj.tInt)
 		case JSONString:
 			return json.Marshal(obj.tString)
+		case JSONBool:
+			return json.Marshal(obj.tBool)
 		case JSONFloat:
 			return json.Marshal(obj.tFloat)
 		case JSONMap:
@@ -67,6 +71,8 @@ func typeAttempt(obj *JSONObj, v interface{}) {
 			typeAttempt(obj, float64(v.(float32)))
 		case float64:
 			obj.SetFloat(v.(float64))
+		case bool:
+			obj.SetBool(v.(bool))
 		case []interface{}:
 			from := v.([]interface{})
 			ar:=make([]*JSONObj, len(from))
@@ -160,6 +166,14 @@ func (obj *JSONObj) SetFloat(float float64) *JSONObj {
 
 	return obj
 }
+
+func (obj *JSONObj) SetBool(bl bool) *JSONObj {
+	obj.jtype = JSONBool
+	obj.tBool = bl
+
+	return obj
+}
+
 func (obj *JSONObj) SetArray(from []*JSONObj) *JSONObj {
 	obj.jtype = JSONArray
 	if from == nil {
@@ -213,6 +227,8 @@ func (obj *JSONObj) Value() interface{} {
 			return obj.tString
 		case JSONFloat:
 			return obj.tFloat
+		case JSONBool:
+			return obj.tBool
 		case JSONArray:
 			ar := make([]interface{}, len(obj.tArray))
 			for i, v := range obj.tArray {
@@ -228,6 +244,13 @@ func (obj *JSONObj) GetInt() (int64, bool) {
 	if obj.jtype == JSONInt {
 		return obj.tInt, true
 	} else { return 0, false }
+}
+func (obj *JSONObj) GetBool() (bool, bool) {
+	if obj.jtype == JSONBool {
+		return obj.tBool, true
+	} else {
+		return false,false
+	}
 }
 func (obj *JSONObj) GetString() (string, bool) {
 	if obj.jtype == JSONString {
@@ -259,12 +282,13 @@ func (obj *JSONObj) IsUndefined() bool {
 type TCaseInt		func(int64)
 type TCaseString	func(string)
 type TCaseFloat		func(float64)
+type TCaseBool		func(bool)
 type TCaseArray		func([]*JSONObj)
 type TCaseMap		func(map[string]*JSONObj)
 type TCaseNull		func()
 type TCaseElse		func(*JSONObj)
 
-func (obj *JSONObj) TypeCaseFixed(ci TCaseInt, cs TCaseString, cf TCaseFloat, ca TCaseArray, cm TCaseMap, cn TCaseNull, ce TCaseElse) bool {
+func (obj *JSONObj) TypeCaseFixed(ci TCaseInt, cs TCaseString, cf TCaseFloat, cb TCaseBool, ca TCaseArray, cm TCaseMap, cn TCaseNull, ce TCaseElse) bool {
 	handled := false
 
 	switch obj.jtype {
@@ -272,6 +296,12 @@ func (obj *JSONObj) TypeCaseFixed(ci TCaseInt, cs TCaseString, cf TCaseFloat, ca
 			if ci != nil {
 				vl , _ :=obj.GetInt()
 				ci(vl)
+				handled = true
+			}
+		case JSONBool:
+			if cb != nil {
+				vl, _ :=obj.GetBool()
+				cb(vl)
 				handled = true
 			}
 		case JSONFloat:
@@ -326,6 +356,7 @@ func (obj *JSONObj) TypeCase(rest ...interface{}) bool {
 
 	var ci TCaseInt = nil
 	var cf TCaseFloat = nil
+	var cb TCaseBool = nil
 	var cs TCaseString = nil
 	var ca TCaseArray = nil
 	var cm TCaseMap = nil
@@ -376,6 +407,8 @@ func (obj *JSONObj) TypeCase(rest ...interface{}) bool {
 				ca, ok = vl.(func([]*JSONObj))
 			case JSONMap:
 				cm, ok = vl.(func(map[string]*JSONObj))
+			case JSONBool:
+				cb, ok = vl.(func(bool))
 			case JSONUndef:
 				cn, ok = vl.(func())
 		}
@@ -385,7 +418,7 @@ func (obj *JSONObj) TypeCase(rest ...interface{}) bool {
 	}
 
 
-	return obj.TypeCaseFixed(ci, cs,cf,ca,cm,cn,ce)
+	return obj.TypeCaseFixed(ci, cs,cf, cb,ca,cm,cn,ce)
 }
 
 func (obj *JSONObj) String() (string, error) {
