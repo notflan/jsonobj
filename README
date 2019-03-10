@@ -23,6 +23,25 @@ Creating typeless JSON marshallable object:
  NewObj().MakeMap()	//Create a new object of type map and returns the new object, and the map. 
  NewObj().SetMap(map)	//Create a new object of type map and set it to the value `map', or `nil' for new map. Returns the object.
 
+Creatimg maps with NewObj():
+
+The functions Table() and KV() are used for this:
+
+NewObj(Table(KV("key", "value"), KV("key2", 123), KV("key3", 0.023))) creates a map like:
+{key:"value", key2: 123, key3: 0.023}
+
+To create array values with KV():
+
+NewObj(Table(KV("array", 1, 2, 3, 4.03, "five")))
+
+To create nested maps with Table():
+
+NewObj(Table(KV("object", Table(KV("name", "value")))))
+
+These can be combined in NewObj() like any other type:
+
+NewObj(1, 2, "three", Table(KV("key", "value", 1.234)))
+
 Accessors: 
  *JSONObj.Type()	//Return type of the object. See source for possible types.
  *JSONObj.Value()	//Return value as interface{}
