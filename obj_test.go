@@ -69,6 +69,9 @@ func TestMessage(t *testing.T) {
 	objm2["array"] = NewObj(1234, 1.234, "one two three four")
 	objm2["map"]  = NewObj(Table(KV("one", 1), KV("two", 2.00), KV("three", "three"), KV("four", Table(KV("sub", 1, 2.001, "3", 4)))))
 
+	fmt.Println("get or exists:", objm2["int"].GetIntOr(-100))
+	fmt.Println("get or not exists:", objm2["string"].GetFloatOr(1.123))
+
 	objm2["boolean"] = NewObj(true)
 
 	objm2["owo"] = NewObj(Table(KV("one", false, 123, true), KV("two", true)), true, false, "one")

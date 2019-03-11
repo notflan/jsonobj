@@ -245,6 +245,14 @@ func (obj *JSONObj) GetInt() (int64, bool) {
 		return obj.tInt, true
 	} else { return 0, false }
 }
+
+func (obj *JSONObj) GetIntOr(or int64) int64 {
+	if v, ok := obj.GetInt(); ok {
+		return v
+	}
+	return or
+}
+
 func (obj *JSONObj) GetBool() (bool, bool) {
 	if obj.jtype == JSONBool {
 		return obj.tBool, true
@@ -252,29 +260,56 @@ func (obj *JSONObj) GetBool() (bool, bool) {
 		return false,false
 	}
 }
+func (obj *JSONObj) GetBoolOr(or bool) bool {
+	if v, ok := obj.GetBool(); ok {
+		return v
+	}
+	return or
+}
 func (obj *JSONObj) GetString() (string, bool) {
 	if obj.jtype == JSONString {
 		return obj.tString, true
 	} else { return "", false }
+}
+func (obj *JSONObj) GetStringOr(or string) string {
+	if v, ok := obj.GetString(); ok {
+		return v
+	}
+	return or
 }
 func (obj *JSONObj) GetFloat() (float64, bool) {
 	if obj.jtype == JSONFloat {
 		return obj.tFloat, true
 	} else { return 0.00, false }
 }
-
+func (obj *JSONObj) GetFloatOr(or float64) float64 {
+	if v, ok := obj.GetFloat(); ok {
+		return v
+	}
+	return or
+}
 func (obj *JSONObj) GetArray() ([]*JSONObj, bool) {
 	if obj.jtype == JSONArray {
 		return obj.tArray, true
 	} else { return nil, false }
 }
-
+func (obj *JSONObj) GetArrayOr(or []*JSONObj) []*JSONObj {
+	if v, ok := obj.GetArray(); ok {
+		return v
+	}
+	return or
+}
 func (obj *JSONObj) GetMap() (map[string]*JSONObj, bool) {
 	if obj.jtype == JSONMap {
 		return obj.tMap, true
 	} else { return nil, false }
 }
-
+func (obj *JSONObj) GetMapOr(or map[string]*JSONObj) map[string]*JSONObj {
+	if v, ok := obj.GetMap(); ok {
+		return v
+	}
+	return or
+}
 func (obj *JSONObj) IsUndefined() bool {
 	return obj.jtype ==JSONUndef
 }
