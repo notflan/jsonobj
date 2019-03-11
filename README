@@ -52,7 +52,7 @@ Accessors:
 
 jsonobj.In(map, string) //Special map accessor that returns an undefined *JSONObj on key lookup failure.
 			//Useful like:
-			// In(map, "key_does_not_exist").StringOr("")
+			// In(map, "key_does_not_exist").GetStringOr("")
 
 Type casing:
  *JSONObj.TypeCaseFixed()	//A series of functions, or nil, that are executed if the object is of that type. See source for argument order. A special function `TCaseElse' can be specified if all others fail.
