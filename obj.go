@@ -314,6 +314,13 @@ func (obj *JSONObj) IsUndefined() bool {
 	return obj.jtype ==JSONUndef
 }
 
+func In(mappu map[string]*JSONObj, str string) *JSONObj {
+	if val, ok := mappu[str];ok {
+		return val
+	}
+	return NewObj().SetUndef()
+}
+
 type TCaseInt		func(int64)
 type TCaseString	func(string)
 type TCaseFloat		func(float64)

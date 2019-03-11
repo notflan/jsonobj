@@ -70,7 +70,8 @@ func TestMessage(t *testing.T) {
 	objm2["map"]  = NewObj(Table(KV("one", 1), KV("two", 2.00), KV("three", "three"), KV("four", Table(KV("sub", 1, 2.001, "3", 4)))))
 
 	fmt.Println("get or exists:", objm2["int"].GetIntOr(-100))
-	fmt.Println("get or not exists:", objm2["string"].GetFloatOr(1.123))
+	fmt.Println("get or not exists:", In(objm2, "uwu").Value())
+	fmt.Println("get or wrong type:", objm2["string"].GetFloatOr(1.123))
 
 	objm2["boolean"] = NewObj(true)
 

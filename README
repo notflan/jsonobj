@@ -50,6 +50,10 @@ Accessors:
  *JSONObj.Get*()	//Return value as specific type and ok bool to check if type was correct
  *JSONObj.Get*Or(value)	//Return value as specific type or a default value if not
 
+jsonobj.In(map, string) //Special map accessor that returns an undefined *JSONObj on key lookup failure.
+			//Useful like:
+			// In(map, "key_does_not_exist").StringOr("")
+
 Type casing:
  *JSONObj.TypeCaseFixed()	//A series of functions, or nil, that are executed if the object is of that type. See source for argument order. A special function `TCaseElse' can be specified if all others fail.
  *JSONObj.TypeCase(...)		//Like TypeCaseFixed() except the programmer provides which types map to which functions and if there is a TCaseElse it is appeneded to the end with no type specifier
