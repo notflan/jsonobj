@@ -27,7 +27,7 @@ func showUnmarshal(obj *JSONObj, indent int) {
 			showUnmarshal(v, indent+1)
 		}
 		fmt.Printf("%s]\n", tabs)
-	}, JSONMap, func(ar map[string]*JSONObj) {
+	}, JSONMap, func(ar ObjMap) {
 		fmt.Println("{")
 		for k, v := range ar {
 
@@ -60,7 +60,7 @@ func TestMessage(t *testing.T) {
 	objm["test4"] = NewObj(123)
 	objm["test5"] = NewObj(nil)
 
-	var objm2 map[string]*JSONObj
+	var objm2 ObjMap
 
 	objm["level"], objm2 = NewObj().MakeMap()
 	objm2["int"] = NewObj(123)
@@ -71,6 +71,8 @@ func TestMessage(t *testing.T) {
 
 	fmt.Println("get or exists:", objm2["int"].GetIntOr(-100))
 	fmt.Println("get or not exists:", In(objm2, "uwu").Value())
+	fmt.Println("get or exists 2:", objm2.In("string").Value())
+	fmt.Println("get or not exists 2:", objm2.In("@w@").Value())
 	fmt.Println("get or wrong type:", objm2["string"].GetFloatOr(1.123))
 
 	objm2["boolean"] = NewObj(true)

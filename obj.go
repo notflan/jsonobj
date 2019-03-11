@@ -7,6 +7,7 @@ import (
 
 type JSONType int32
 
+
 const (
 	JSONUndef JSONType = iota
 	JSONString
@@ -17,6 +18,8 @@ const (
 	JSONArray
 )
 
+type ObjMap map[string]*JSONObj
+
 type JSONObj struct {
 	jtype JSONType
 
@@ -25,7 +28,11 @@ type JSONObj struct {
 	tBool bool
 	tFloat float64
 	tArray []*JSONObj
-	tMap map[string]*JSONObj
+	tMap ObjMap
+}
+
+func (m ObjMap) In(key string) *JSONObj {
+	return In(m, key)
 }
 
 func (obj JSONObj)  MarshalJSON() ([]byte, error) {
@@ -85,7 +92,7 @@ func typeAttempt(obj *JSONObj, v interface{}) {
 			obj.SetArray(ar)
 		case map[string]interface{}:
 			from := v.(map[string]interface{})
-			mp := make(map[string]*JSONObj)
+			mp := make(ObjMap)
 
 			for key, val:= range from {
 				obj2 := NewObj()
@@ -183,10 +190,10 @@ func (obj *JSONObj) SetArray(from []*JSONObj) *JSONObj {
 	}
 	return obj
 }
-func (obj *JSONObj) SetMap(from map[string]*JSONObj) *JSONObj {
+func (obj *JSONObj) SetMap(from ObjMap) *JSONObj {
 	obj.jtype=  JSONMap
 	if from == nil {
-		obj.tMap = make(map[string]*JSONObj)
+		obj.tMap = make(ObjMap)
 	} else {
 		obj.tMap = from
 	}
@@ -203,7 +210,7 @@ func (obj *JSONObj) MakeArray(init ...*JSONObj) (*JSONObj, *[]*JSONObj) {
 	return obj, &obj.tArray
 }
 
-func (obj *JSONObj) MakeMap() (*JSONObj, map[string]*JSONObj) {
+func (obj *JSONObj) MakeMap() (*JSONObj,ObjMap) {
 	obj.SetMap(nil)
 	return obj, obj.tMap
 }
@@ -234,8 +241,13 @@ func (obj *JSONObj) Value() interface{} {
 			for i, v := range obj.tArray {
 				ar[i] = v.Value()
 			}
+			return ar
 		case JSONMap:
-			return obj.tMap
+			mp := make(map[string]interface{})
+			for k, v := range obj.tMap {
+				mp[k] = v.Value()
+			}
+			return mp
 	}
 	return nil
 }
@@ -299,12 +311,12 @@ func (obj *JSONObj) GetArrayOr(or []*JSONObj) []*JSONObj {
 	}
 	return or
 }
-func (obj *JSONObj) GetMap() (map[string]*JSONObj, bool) {
+func (obj *JSONObj) GetMap() (ObjMap, bool) {
 	if obj.jtype == JSONMap {
 		return obj.tMap, true
 	} else { return nil, false }
 }
-func (obj *JSONObj) GetMapOr(or map[string]*JSONObj) map[string]*JSONObj {
+func (obj *JSONObj) GetMapOr(or ObjMap) ObjMap {
 	if v, ok := obj.GetMap(); ok {
 		return v
 	}
@@ -326,7 +338,7 @@ type TCaseString	func(string)
 type TCaseFloat		func(float64)
 type TCaseBool		func(bool)
 type TCaseArray		func([]*JSONObj)
-type TCaseMap		func(map[string]*JSONObj)
+type TCaseMap		func(ObjMap)
 type TCaseNull		func()
 type TCaseElse		func(*JSONObj)
 
@@ -448,7 +460,16 @@ func (obj *JSONObj) TypeCase(rest ...interface{}) bool {
 			case JSONArray:
 				ca, ok = vl.(func([]*JSONObj))
 			case JSONMap:
-				cm, ok = vl.(func(map[string]*JSONObj))
+				cm, ok = vl.(func(ObjMap))
+				if !ok {
+					cmo, ok2 := vl.(func(map[string]*JSONObj))
+					if ok2 {
+						cm = func(om ObjMap) {
+							cmo(ObjMap(om))
+						}
+					}
+					ok = ok2
+				}
 			case JSONBool:
 				cb, ok = vl.(func(bool))
 			case JSONUndef:

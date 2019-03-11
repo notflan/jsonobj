@@ -23,6 +23,10 @@ Creating typeless JSON marshallable object:
  NewObj().MakeMap()	//Create a new object of type map and returns the new object, and the map. 
  NewObj().SetMap(map)	//Create a new object of type map and set it to the value `map', or `nil' for new map. Returns the object.
 
+Maps are stored as type ObjMap (which is map[string]*JSONObj) with 1 method In(string):
+
+map.In(key)		//Returns JSON object in map of key `key', or an undefined JSONObj if not. (see In() below)
+
 Creatimg maps with NewObj():
 
 The functions Table() and KV() are used for this:
@@ -50,7 +54,7 @@ Accessors:
  *JSONObj.Get*()	//Return value as specific type and ok bool to check if type was correct
  *JSONObj.Get*Or(value)	//Return value as specific type or a default value if not
 
-jsonobj.In(map, string) //Special map accessor that returns an undefined *JSONObj on key lookup failure.
+jsonobj.In(map, string) //Special map accessor that returns an undefined *JSONObj on key lookup failure. (see ObjMap.In() above)
 			//Useful like:
 			// In(map, "key_does_not_exist").GetStringOr("")
 
