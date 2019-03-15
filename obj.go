@@ -3,6 +3,7 @@ package jsonobj
 import (
 	"github.com/pkg/errors"
 	"encoding/json"
+	"reflect"
 )
 
 type JSONType int32
@@ -103,7 +104,16 @@ func typeAttempt(obj *JSONObj, v interface{}) {
 		case *JSONObj:
 			*obj = *(v.(*JSONObj))
 		default:
-			obj.SetUndef()
+			if v!=nil && reflect.TypeOf(v).Kind() == reflect.Slice {
+				val := reflect.ValueOf(v)
+				rt := make([]interface{}, val.Len())
+				for i:=0;i<val.Len();i++ {
+					rt[i] = val.Index(i).Interface()
+				}
+				typeAttempt(obj, rt)
+			} else {
+				obj.SetUndef()
+			}
 	}
 }
 
