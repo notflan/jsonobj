@@ -265,6 +265,8 @@ func (obj *JSONObj) Value() interface{} {
 func (obj *JSONObj) GetInt() (int64, bool) {
 	if obj.jtype == JSONInt {
 		return obj.tInt, true
+	} else if obj.jtype == JSONFloat {
+		return int64(obj.tFloat), true
 	} else { return 0, false }
 }
 
@@ -302,6 +304,8 @@ func (obj *JSONObj) GetStringOr(or string) string {
 func (obj *JSONObj) GetFloat() (float64, bool) {
 	if obj.jtype == JSONFloat {
 		return obj.tFloat, true
+	} else if obj.jtype == JSONInt {
+		return float64(obj.tInt), true
 	} else { return 0.00, false }
 }
 func (obj *JSONObj) GetFloatOr(or float64) float64 {
